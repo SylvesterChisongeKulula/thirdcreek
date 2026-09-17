@@ -1,0 +1,76 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-primary: #001a53;
+  --color-primary-active: #000f33;
+  --color-accent: #e50000;
+  --color-accent-active: #b80000;
+
+  --color-canvas: #ffffff;
+  --color-surface-soft: #f7f7f7;
+  --color-surface-card: #fafafa;
+  --color-surface-strong: #ebebeb;
+  --color-surface-dark: #0a1330;
+
+  --color-ink: #1c1c1c;
+  --color-body: #3c3c3c;
+  --color-muted: #6b6b6b;
+
+  --color-hairline: #e6e6e6;
+  --color-hairline-strong: #cccccc;
+
+  --color-on-primary: #ffffff;
+  --color-on-dark: #ffffff;
+  --color-on-dark-soft: #b7bccb;
+
+  --color-success: #22c55e;
+  --color-warning: #f59e0b;
+  --color-error: #dc2626;
+
+  --font-display: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-body: 'Inter', system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+@layer base {
+  html {
+    font-family: var(--font-body);
+  }
+
+  body {
+    @apply bg-canvas text-ink;
+  }
+}
+
+@layer components {
+  .label-uppercase {
+    @apply text-[13px] font-bold uppercase tracking-[1.5px];
+  }
+
+  .btn-primary {
+    @apply inline-flex items-center justify-center bg-primary text-on-primary font-display font-bold text-[14px] tracking-[0.5px] px-8 py-[14px] transition-colors hover:bg-primary-active;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center bg-canvas text-ink font-display font-bold text-[14px] tracking-[0.5px] px-8 py-[13px] border border-hairline-strong transition-colors hover:border-ink;
+  }
+
+  .btn-secondary-on-dark {
+    @apply inline-flex items-center justify-center bg-transparent text-on-dark font-display font-bold text-[14px] tracking-[0.5px] px-8 py-[13px] border border-on-dark transition-colors hover:bg-white/10;
+  }
+
+  .text-link-cta {
+    @apply text-[13px] font-bold uppercase tracking-[1.5px] text-ink inline-flex items-center gap-1 hover:text-primary transition-colors;
+  }
+
+  .text-input {
+    @apply w-full bg-canvas text-ink font-body text-[16px] px-4 py-[14px] border border-hairline focus:outline-none focus:border-ink transition-colors;
+  }
+
+  .filter-chip {
+    @apply px-4 py-2 text-[13px] font-body border border-hairline-strong text-ink transition-colors hover:border-ink;
+  }
+
+  .filter-chip-active {
+    @apply bg-ink text-white border-ink;
+  }
+}
