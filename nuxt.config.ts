@@ -1,4 +1,20 @@
+import { existsSync, readdirSync } from 'node:fs'
+import { fileURLToPath } from 'node:url'
 import tailwindcss from '@tailwindcss/vite'
+
+// libsql ships its native binary as a separate platform-specific optional dependency
+// (e.g. @libsql/linux-x64-musl). It's required dynamically at runtime, so Nitro's
+// build-time file tracer can't follow it — without this, it's silently missing from
+// .output/server/node_modules and the deployed app crashes with
+// "Cannot find module '@libsql/<platform>'". Force-include whichever native variant
+// is actually installed (works the same on any dev machine and any deploy target).
+function libsqlNativeTraceIncludes() {
+  const dir = fileURLToPath(new URL('./node_modules/@libsql', import.meta.url))
+  if (!existsSync(dir)) return []
+  return readdirSync(dir)
+    .filter((name) => /^(linux|darwin|win32)-/.test(name))
+    .flatMap((name) => [`node_modules/@libsql/${name}/package.json`, `node_modules/@libsql/${name}/index.node`])
+}
 
 // https://nuxt.com/docs/api/configuration/nuxt-config
 export default defineNuxtConfig({
@@ -9,6 +25,12 @@ export default defineNuxtConfig({
 
   vite: {
     plugins: [tailwindcss()],
+  },
+
+  nitro: {
+    externals: {
+      traceInclude: libsqlNativeTraceIncludes(),
+    },
   },
 
   typescript: {
