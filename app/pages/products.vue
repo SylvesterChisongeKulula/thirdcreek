@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { products, brands, categories, type Brand, type Category } from '~/data/products'
+import { brands, categories, type Brand, type Category, type Product } from '~/data/products'
+
+const { data: products } = await useFetch<Product[]>('/api/products', { default: () => [] })
 
 useHead({
   title: 'Auto Spares — Third Creek Auto Spares',
@@ -16,7 +18,7 @@ const activeBrand = ref<Brand | 'All'>('All')
 const activeCategory = ref<Category | 'All'>('All')
 
 const filteredProducts = computed(() =>
-  products.filter((product) => {
+  products.value.filter((product) => {
     const brandMatch = activeBrand.value === 'All' || product.brand === activeBrand.value
     const categoryMatch = activeCategory.value === 'All' || product.category === activeCategory.value
     return brandMatch && categoryMatch

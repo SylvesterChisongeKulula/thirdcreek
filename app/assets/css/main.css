@@ -73,4 +73,24 @@
   .filter-chip-active {
     @apply bg-ink text-white border-ink;
   }
+
+  .sidebar-link {
+    @apply flex items-center gap-3 px-4 py-[10px] text-[14px] font-body text-on-dark-soft transition-colors hover:bg-white/5 hover:text-on-dark;
+  }
+
+  .sidebar-link-active {
+    @apply bg-white/10 text-on-dark font-semibold;
+  }
+
+  .sidebar-link-disabled {
+    @apply flex items-center gap-3 px-4 py-[10px] text-[14px] font-body text-on-dark-soft/50 cursor-not-allowed;
+  }
+
+  .crm-panel {
+    @apply bg-canvas border border-hairline p-6;
+  }
+
+  .kpi-card {
+    @apply bg-surface-card border border-hairline p-6 flex flex-col gap-2;
+  }
 }

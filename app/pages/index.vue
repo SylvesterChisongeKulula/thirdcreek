@@ -1,8 +1,10 @@
 <script setup lang="ts">
-import { products } from '~/data/products'
+import type { Product } from '~/data/products'
 import { services } from '~/data/services'
 import { contact } from '~/data/company'
 import { supportedBrands } from '~/data/brands'
+
+const { data: products } = await useFetch<Product[]>('/api/products', { default: () => [] })
 
 useHead({
   title: 'Third Creek Auto Spares — Genuine Auto Parts in Lusaka, Zambia',
@@ -15,7 +17,7 @@ useHead({
   ],
 })
 
-const featuredProducts = products.slice(0, 4)
+const featuredProducts = computed(() => products.value.slice(0, 4))
 const featuredServices = services.slice(0, 3)
 </script>
 
