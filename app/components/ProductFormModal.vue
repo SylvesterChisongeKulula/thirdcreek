@@ -25,8 +25,8 @@ const submitting = ref(false)
 
 function resetForm() {
   form.name = props.product?.name ?? ''
-  form.brand = props.product?.brand ?? brands[0]
-  form.category = props.product?.category ?? categories[0]
+  form.brand = props.product?.brand ?? brands[0]!
+  form.category = props.product?.category ?? categories[0]!
   form.blurb = props.product?.blurb ?? ''
   imageFile.value = null
   imagePreview.value = props.product?.image ?? null
@@ -71,8 +71,8 @@ async function submit() {
 
     emit('saved', product)
     close()
-  } catch {
-    error.value = 'Something went wrong — please try again.'
+  } catch (err) {
+    error.value = apiErrorMessage(err)
   } finally {
     submitting.value = false
   }
@@ -107,7 +107,7 @@ async function submit() {
           alt="Product preview"
           class="h-16 w-16 shrink-0 border border-hairline object-cover"
         />
-        <input type="file" accept="image/*" class="text-[13px]" @change="onImageChange" />
+        <input type="file" accept=".jpg,.jpeg,.png,.webp" class="text-[13px]" @change="onImageChange" />
       </div>
     </div>
 

@@ -21,9 +21,18 @@ export async function generateProductId(db: Db, name: string) {
   return id
 }
 
+const ALLOWED_IMAGE_EXTENSIONS = ['.jpg', '.jpeg', '.png', '.webp']
+const MAX_IMAGE_BYTES = 5 * 1024 * 1024
+
 export async function saveUploadedImage(name: string, file: { filename?: string; data: Buffer }) {
+  const ext = file.filename?.includes('.') ? file.filename.slice(file.filename.lastIndexOf('.')).toLowerCase() : ''
+  if (!ALLOWED_IMAGE_EXTENSIONS.includes(ext)) {
+    throw createError({ statusCode: 400, statusMessage: 'Images must be JPG, PNG or WebP' })
+  }
+  if (file.data.length > MAX_IMAGE_BYTES) {
+    throw createError({ statusCode: 400, statusMessage: 'Images must be 5 MB or smaller' })
+  }
   await mkdir(UPLOADS_DIR, { recursive: true })
-  const ext = file.filename?.includes('.') ? file.filename.slice(file.filename.lastIndexOf('.')) : ''
   const filename = `${slugify(name) || 'product'}-${Date.now()}${ext}`
   await writeFile(join(UPLOADS_DIR, filename), file.data)
   return `${UPLOADS_URL_PREFIX}${filename}`

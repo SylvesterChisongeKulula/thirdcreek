@@ -19,8 +19,8 @@ async function submit() {
   try {
     await login(name.value.trim(), password.value)
     await navigateTo('/admin')
-  } catch {
-    error.value = 'Name or password is incorrect.'
+  } catch (err) {
+    error.value = apiErrorMessage(err, 'Name or password is incorrect.')
   } finally {
     submitting.value = false
   }

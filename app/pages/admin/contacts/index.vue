@@ -1,19 +1,23 @@
 <script setup lang="ts">
 import { Plus } from '@lucide/vue'
-import type { Contact, StoreLocation } from '~/data/crm-contacts'
+import { storeLocations, type Contact, type StoreLocation } from '~/data/crm-contacts'
 import { brands } from '~/data/products'
 import type { Brand } from '~/data/products'
 
 definePageMeta({ layout: 'admin', title: 'Contacts' })
 
-const { contactsState } = useCrmData()
+const { contactsState, leadsState } = useCrmData()
 
 const searchQuery = ref('')
 const selectedLocation = ref<StoreLocation | 'All'>('All')
 const selectedBrand = ref<Brand | 'All'>('All')
 const showAddContact = ref(false)
 
-const locations: (StoreLocation | 'All')[] = ['All', 'Kabwata', 'Chalala', 'Ibex Hill (Meanwood)']
+const locations: (StoreLocation | 'All')[] = ['All', ...storeLocations]
+
+const { user } = useAuth()
+// Staff only see their own branch's contacts, so the branch filter is owner-only.
+const showBranchFilter = computed(() => user.value?.authRole !== 'staff')
 
 const filteredContacts = computed(() =>
   contactsState.value.filter((contact) => {
@@ -28,8 +32,12 @@ const filteredContacts = computed(() =>
 )
 
 const lastInteraction = (contact: Contact) => {
-  const dates = [...contact.notes.map((n) => n.date), ...contact.purchaseHistory.map((p) => p.date)]
-  return dates.sort().at(-1) ?? contact.createdAt
+  const dates = [
+    contact.createdAt,
+    ...contact.notes.map((note) => note.date),
+    ...leadsState.value.filter((lead) => lead.contactId === contact.id).map((lead) => lead.lastUpdated),
+  ]
+  return dates.sort().at(-1)
 }
 </script>
 
@@ -43,7 +51,7 @@ const lastInteraction = (contact: Contact) => {
       </button>
     </div>
 
-    <div class="flex flex-wrap gap-2">
+    <div v-if="showBranchFilter" class="flex flex-wrap gap-2">
       <button
         v-for="location in locations"
         :key="location"

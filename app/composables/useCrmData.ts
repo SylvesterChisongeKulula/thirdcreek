@@ -2,9 +2,9 @@ import type { Contact } from '~/data/crm-contacts'
 import type { Lead, LeadStage } from '~/data/crm-leads'
 
 export function useCrmData() {
-  const requestFetch = useRequestFetch()
-  const contactsFetch = useFetch<Contact[]>('/api/admin/contacts', { default: () => [], $fetch: requestFetch })
-  const leadsFetch = useFetch<Lead[]>('/api/admin/leads', { default: () => [], $fetch: requestFetch })
+  const contactsFetch = useFetch<Contact[]>('/api/admin/contacts', { default: () => [] })
+  const leadsFetch = useFetch<Lead[]>('/api/admin/leads', { default: () => [] })
+  const toast = useToast()
 
   const contactsState = computed(() => contactsFetch.data.value ?? [])
   const leadsState = computed(() => leadsFetch.data.value ?? [])
@@ -34,7 +34,8 @@ export function useCrmData() {
       await $fetch(`/api/admin/leads/${leadId}/stage`, { method: 'PATCH', body: { stage: newStage } })
       await refreshAll()
     } catch (error) {
-      console.error('Failed to advance lead stage', error)
+      toast.show(apiErrorMessage(error, "Couldn't move the lead — please try again."))
+      await leadsFetch.refresh()
     }
   }
 
@@ -51,6 +52,35 @@ export function useCrmData() {
     return contact
   }
 
+  type ContactInput = Omit<Contact, 'id' | 'createdAt' | 'notes' | 'purchaseHistory'>
+  type LeadInput = Omit<Lead, 'id' | 'stage' | 'createdAt' | 'lastUpdated'>
+
+  async function updateContact(id: string, input: ContactInput) {
+    await $fetch(`/api/admin/contacts/${id}`, { method: 'PATCH', body: input })
+    await contactsFetch.refresh()
+  }
+
+  async function deleteContact(id: string) {
+    await $fetch(`/api/admin/contacts/${id}`, { method: 'DELETE' })
+    await refreshAll()
+  }
+
+  async function addContactNote(id: string, text: string) {
+    await $fetch(`/api/admin/contacts/${id}/notes`, { method: 'POST', body: { text } })
+    await contactsFetch.refresh()
+  }
+
+  async function updateLead(id: string, input: LeadInput) {
+    const lead = await $fetch<Lead>(`/api/admin/leads/${id}`, { method: 'PATCH', body: input })
+    await leadsFetch.refresh()
+    return lead
+  }
+
+  async function deleteLead(id: string) {
+    await $fetch(`/api/admin/leads/${id}`, { method: 'DELETE' })
+    await leadsFetch.refresh()
+  }
+
   return {
     contactsState,
     leadsState,
@@ -60,5 +90,10 @@ export function useCrmData() {
     advanceLeadStage,
     markLeadLost,
     convertLeadToContact,
+    updateContact,
+    deleteContact,
+    addContactNote,
+    updateLead,
+    deleteLead,
   }
 }

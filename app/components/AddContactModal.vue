@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import type { Contact, StoreLocation } from '~/data/crm-contacts'
+import { storeLocations, type Contact, type StoreLocation } from '~/data/crm-contacts'
 import { brands } from '~/data/products'
 import type { Brand } from '~/data/products'
 
@@ -7,13 +7,13 @@ const props = defineProps<{
   modelValue: boolean
   initialValues?: Partial<Contact>
   sourceLeadId?: string
+  // Set to edit an existing contact (prefilled from initialValues).
+  editContactId?: string
 }>()
 const emit = defineEmits<{ 'update:modelValue': [value: boolean]; created: [contact: Contact] }>()
 
-const { addContact, convertLeadToContact } = useCrmData()
+const { addContact, convertLeadToContact, updateContact } = useCrmData()
 const { user } = useAuth()
-
-const locations: StoreLocation[] = ['Kabwata', 'Chalala', 'Ibex Hill (Meanwood)']
 
 const lockedLocation = computed(() => (user.value?.authRole === 'staff' ? user.value.location : null))
 
@@ -80,13 +80,17 @@ async function submit() {
   }
 
   try {
-    const contact = props.sourceLeadId
-      ? await convertLeadToContact(props.sourceLeadId, input)
-      : await addContact(input)
-    emit('created', contact)
+    if (props.editContactId) {
+      await updateContact(props.editContactId, input)
+    } else {
+      const contact = props.sourceLeadId
+        ? await convertLeadToContact(props.sourceLeadId, input)
+        : await addContact(input)
+      emit('created', contact)
+    }
     close()
-  } catch {
-    error.value = 'Something went wrong — please try again.'
+  } catch (err) {
+    error.value = apiErrorMessage(err)
   }
 }
 </script>
@@ -94,7 +98,7 @@ async function submit() {
 <template>
   <AdminModal
     :model-value="modelValue"
-    :title="sourceLeadId ? 'Convert to Contact' : 'Add Contact'"
+    :title="editContactId ? 'Edit Contact' : sourceLeadId ? 'Convert to Contact' : 'Add Contact'"
     @update:model-value="emit('update:modelValue', $event)"
   >
     <div class="flex flex-col gap-4">
@@ -106,7 +110,7 @@ async function submit() {
       <input v-model="form.email" type="email" placeholder="Email (optional)" class="text-input" />
 
       <select v-model="form.location" class="text-input" :disabled="!!lockedLocation">
-        <option v-for="location in locations" :key="location" :value="location">{{ location }}</option>
+        <option v-for="location in storeLocations" :key="location" :value="location">{{ location }}</option>
       </select>
 
       <div>
@@ -130,7 +134,7 @@ async function submit() {
 
     <template #footer>
       <button type="button" class="btn-secondary" @click="close">Cancel</button>
-      <button type="button" class="btn-primary" @click="submit">{{ sourceLeadId ? 'Convert' : 'Add Contact' }}</button>
+      <button type="button" class="btn-primary" @click="submit">{{ editContactId ? 'Save' : sourceLeadId ? 'Convert' : 'Add Contact' }}</button>
     </template>
   </AdminModal>
 </template>

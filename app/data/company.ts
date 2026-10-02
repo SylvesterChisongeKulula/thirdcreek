@@ -89,16 +89,55 @@ export const teamGalleryImages: string[] = [
   '/images/profile/team-full-4.jpg',
 ]
 
+export interface BranchMap {
+  // An address or "lat,lng" pair, as typed into Google Maps search.
+  query: string
+  zoom: number
+  // True while we only know the area, not the exact pin.
+  approximate?: boolean
+}
+
+export interface BranchLocation {
+  name: string
+  address: string
+  main?: boolean
+  map: BranchMap
+}
+
+// Keyless Google Maps embed, suitable for an <iframe>.
+export function mapEmbedUrl(map: BranchMap) {
+  return `https://maps.google.com/maps?q=${encodeURIComponent(map.query)}&z=${map.zoom}&hl=en&output=embed`
+}
+
+// Opens the place in Google Maps (or the Maps app on a phone) for directions.
+export function mapDirectionsUrl(map: BranchMap) {
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(map.query)}`
+}
+
 export const contact = {
   phonePrimary: '0770598983',
   phonePrimaryIntl: '260770598983',
   phoneSecondary: '0966190060',
   email: 'thirdcreek1996@gmail.com',
   locations: [
-    { name: 'Kabwata', address: 'Kabwata, Lusaka' },
-    { name: 'Chalala', address: 'Chalala, Lusaka' },
-    { name: 'Ibex Hill (Meanwood)', address: '1749 Serval, Meanwood, Ibex Hill, Lusaka' },
-  ],
+    {
+      name: 'Ibex Hill (Meanwood)',
+      address: '1749 Serval, Meanwood, Ibex Hill, Lusaka',
+      main: true,
+      map: { query: '1749 Serval, Meanwood, Ibex Hill, Lusaka', zoom: 16 },
+    },
+    {
+      name: 'Chalala',
+      address: 'Chalala, Lusaka',
+      map: { query: '-15.4613826,28.3289765', zoom: 17 },
+    },
+    {
+      name: 'Kabwata',
+      address: 'Kabwata, Lusaka',
+      // TODO: replace with the branch's exact coordinates (e.g. '-15.44,28.29') and drop `approximate`.
+      map: { query: 'Kabwata, Lusaka', zoom: 15, approximate: true },
+    },
+  ] as BranchLocation[],
 }
 
 export const missionStatement =

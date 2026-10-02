@@ -6,6 +6,15 @@ export interface StaffMember {
   location: StoreLocation
 }
 
+// A staff member as returned by the admin API (never includes the password hash).
+export interface StaffAccount extends StaffMember {
+  id: number
+  authRole: 'owner' | 'staff'
+  hasLogin: boolean
+}
+
+export type StaffAccountInput = Pick<StaffAccount, 'role' | 'location' | 'authRole'>
+
 export const staff: StaffMember[] = [
   { name: 'Nalwamba Kabungo', role: 'Company Director', location: 'Kabwata' },
   { name: 'Ruth Mulungushi', role: 'Company Director', location: 'Chalala' },

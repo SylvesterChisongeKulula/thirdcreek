@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { Pencil, Trash2 } from '@lucide/vue'
 import { leadStages } from '~/data/crm-leads'
 import type { Lead, LeadStage } from '~/data/crm-leads'
 
@@ -10,7 +11,12 @@ const emit = defineEmits<{
   'update:modelValue': [value: boolean]
   convert: [id: string]
   'change-stage': [id: string, stage: LeadStage]
+  edit: [lead: Lead]
+  delete: [lead: Lead]
 }>()
+
+const { user } = useAuth()
+const isOwner = computed(() => user.value?.authRole === 'owner')
 
 const formattedValue = computed(() =>
   props.lead
@@ -21,6 +27,9 @@ const formattedValue = computed(() =>
 )
 
 const nudge = computed(() => (props.lead ? getLeadNudge(props.lead) : null))
+
+const { partnersState } = useMarketingPartners()
+const referringPartner = computed(() => partnersState.value.find((partner) => partner.id === props.lead?.partnerId))
 </script>
 
 <template>
@@ -38,10 +47,10 @@ const nudge = computed(() => (props.lead ? getLeadNudge(props.lead) : null))
         {{ nudge.message }}
       </p>
 
-      <div>
+      <div class="flex flex-wrap items-center gap-3">
         <NuxtLink
           v-if="lead.contactId"
-          :to="`/crm/contacts/${lead.contactId}`"
+          :to="`/admin/contacts/${lead.contactId}`"
           class="text-link-cta"
         >
           View Contact →
@@ -49,6 +58,19 @@ const nudge = computed(() => (props.lead ? getLeadNudge(props.lead) : null))
         <button v-else type="button" class="btn-primary" @click="$emit('convert', lead.id)">
           Convert to Contact
         </button>
+        <div class="ml-auto flex gap-2">
+          <button type="button" class="filter-chip inline-flex items-center gap-1.5" @click="$emit('edit', lead)">
+            <Pencil :size="14" /> Edit
+          </button>
+          <button
+            v-if="isOwner"
+            type="button"
+            class="filter-chip inline-flex items-center gap-1.5 !text-error hover:!border-error"
+            @click="$emit('delete', lead)"
+          >
+            <Trash2 :size="14" /> Delete
+          </button>
+        </div>
       </div>
 
       <div class="grid grid-cols-2 gap-4 text-[14px]">
@@ -67,6 +89,12 @@ const nudge = computed(() => (props.lead ? getLeadNudge(props.lead) : null))
         <div>
           <p class="label-uppercase text-muted mb-1">Location</p>
           <p class="text-ink">{{ lead.location }}</p>
+        </div>
+        <div>
+          <p class="label-uppercase text-muted mb-1">Source</p>
+          <p class="text-ink">
+            {{ lead.source }}<span v-if="referringPartner"> · {{ referringPartner.name }}</span>
+          </p>
         </div>
         <div>
           <p class="label-uppercase text-muted mb-1">Created</p>

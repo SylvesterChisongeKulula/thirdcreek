@@ -1,5 +1,6 @@
 import type { Brand } from './products'
 import type { StoreLocation } from './crm-contacts'
+import type { LeadSource } from './marketing'
 
 export type LeadStage = 'New Lead' | 'Contacted' | 'Quoted' | 'Won' | 'Lost'
 
@@ -16,6 +17,8 @@ export interface Lead {
   estimatedValue: number
   assignedTo: string
   stage: LeadStage
+  source: LeadSource
+  partnerId?: string | null
   createdAt: string
   lastUpdated: string
 }
@@ -32,6 +35,7 @@ export const leads: Lead[] = [
     estimatedValue: 6200,
     assignedTo: 'Mwansa Banda',
     stage: 'New Lead',
+    source: 'Facebook',
     createdAt: '2026-09-18',
     lastUpdated: '2026-09-18',
   },
@@ -46,6 +50,7 @@ export const leads: Lead[] = [
     estimatedValue: 3800,
     assignedTo: 'Bwalya Mumba',
     stage: 'New Lead',
+    source: 'Walk-in',
     createdAt: '2026-09-17',
     lastUpdated: '2026-09-17',
   },
@@ -59,6 +64,7 @@ export const leads: Lead[] = [
     estimatedValue: 1100,
     assignedTo: 'Chileshe Phiri',
     stage: 'New Lead',
+    source: 'Facebook',
     createdAt: '2026-09-19',
     lastUpdated: '2026-09-19',
   },
@@ -72,6 +78,7 @@ export const leads: Lead[] = [
     estimatedValue: 1950,
     assignedTo: 'Mwansa Banda',
     stage: 'New Lead',
+    source: 'WhatsApp',
     createdAt: '2026-09-20',
     lastUpdated: '2026-09-20',
   },
@@ -86,6 +93,7 @@ export const leads: Lead[] = [
     estimatedValue: 1650,
     assignedTo: 'Chileshe Phiri',
     stage: 'Contacted',
+    source: 'Facebook',
     createdAt: '2026-09-08',
     lastUpdated: '2026-09-15',
   },
@@ -100,6 +108,7 @@ export const leads: Lead[] = [
     estimatedValue: 3300,
     assignedTo: 'Mwansa Banda',
     stage: 'Contacted',
+    source: 'Phone call',
     createdAt: '2026-09-05',
     lastUpdated: '2026-09-14',
   },
@@ -113,6 +122,7 @@ export const leads: Lead[] = [
     estimatedValue: 980,
     assignedTo: 'Bwalya Mumba',
     stage: 'Contacted',
+    source: 'Walk-in',
     createdAt: '2026-09-10',
     lastUpdated: '2026-09-16',
   },
@@ -126,6 +136,7 @@ export const leads: Lead[] = [
     estimatedValue: 2400,
     assignedTo: 'Chileshe Phiri',
     stage: 'Contacted',
+    source: 'Facebook',
     createdAt: '2026-09-12',
     lastUpdated: '2026-09-17',
   },
@@ -140,6 +151,7 @@ export const leads: Lead[] = [
     estimatedValue: 8400,
     assignedTo: 'Mwansa Banda',
     stage: 'Quoted',
+    source: 'Facebook',
     createdAt: '2026-08-28',
     lastUpdated: '2026-09-11',
   },
@@ -154,6 +166,7 @@ export const leads: Lead[] = [
     estimatedValue: 4600,
     assignedTo: 'Chileshe Phiri',
     stage: 'Quoted',
+    source: 'Walk-in',
     createdAt: '2026-09-01',
     lastUpdated: '2026-09-13',
   },
@@ -168,6 +181,7 @@ export const leads: Lead[] = [
     estimatedValue: 2200,
     assignedTo: 'Bwalya Mumba',
     stage: 'Quoted',
+    source: 'WhatsApp',
     createdAt: '2026-09-03',
     lastUpdated: '2026-09-12',
   },
@@ -181,6 +195,7 @@ export const leads: Lead[] = [
     estimatedValue: 1900,
     assignedTo: 'Mwansa Banda',
     stage: 'Quoted',
+    source: 'Facebook',
     createdAt: '2026-09-06',
     lastUpdated: '2026-09-14',
   },
@@ -195,6 +210,7 @@ export const leads: Lead[] = [
     estimatedValue: 2100,
     assignedTo: 'Bwalya Mumba',
     stage: 'Won',
+    source: 'Facebook',
     createdAt: '2026-08-02',
     lastUpdated: '2026-08-14',
   },
@@ -209,6 +225,7 @@ export const leads: Lead[] = [
     estimatedValue: 1900,
     assignedTo: 'Chileshe Phiri',
     stage: 'Won',
+    source: 'Walk-in',
     createdAt: '2026-08-10',
     lastUpdated: '2026-08-30',
   },
@@ -222,6 +239,7 @@ export const leads: Lead[] = [
     estimatedValue: 420,
     assignedTo: 'Mwansa Banda',
     stage: 'Lost',
+    source: 'Facebook',
     createdAt: '2026-08-15',
     lastUpdated: '2026-08-22',
   },
@@ -235,6 +253,7 @@ export const leads: Lead[] = [
     estimatedValue: 2700,
     assignedTo: 'Chileshe Phiri',
     stage: 'Lost',
+    source: 'Phone call',
     createdAt: '2026-08-20',
     lastUpdated: '2026-09-02',
   },

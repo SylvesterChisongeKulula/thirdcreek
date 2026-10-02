@@ -10,7 +10,6 @@ export interface AuthUser {
 export function useAuth() {
   const { data: user, refresh } = useFetch<AuthUser | null>('/api/auth/me', {
     default: () => null,
-    $fetch: useRequestFetch(),
   })
 
   async function login(name: string, password: string) {

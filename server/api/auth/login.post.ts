@@ -6,13 +6,17 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Name and password are required' })
   }
 
+  assertLoginAllowed(event, name)
+
   const db = useDb()
   const staffMember = await db.select().from(tables.staff).where(eq(tables.staff.name, name)).get()
 
   if (!staffMember || !staffMember.passwordHash || !verifyPassword(password, staffMember.passwordHash)) {
+    recordLoginFailure(event, name)
     throw createError({ statusCode: 401, statusMessage: 'Name or password is incorrect' })
   }
 
+  clearLoginFailures(event, name)
   const session = await getUserSession(event)
   await session.update({
     staffId: staffMember.id,

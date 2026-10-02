@@ -2,6 +2,8 @@ import type { Brand } from './products'
 
 export type StoreLocation = 'Kabwata' | 'Chalala' | 'Ibex Hill (Meanwood)'
 
+export const storeLocations: StoreLocation[] = ['Kabwata', 'Chalala', 'Ibex Hill (Meanwood)']
+
 export interface ContactNote {
   date: string
   author: string

@@ -1,8 +1,11 @@
 <script setup lang="ts">
-import { LayoutDashboard, Users, KanbanSquare, Package, Boxes, Receipt, Store } from '@lucide/vue'
+import { LayoutDashboard, Users, KanbanSquare, Package, Megaphone, Boxes, Receipt, UserCog } from '@lucide/vue'
 
 defineProps<{ open: boolean }>()
 defineEmits<{ close: [] }>()
+
+const { user } = useAuth()
+const isOwner = computed(() => user.value?.authRole === 'owner')
 </script>
 
 <template>
@@ -22,13 +25,14 @@ defineEmits<{ close: [] }>()
         <AdminSidebarLink to="/admin/contacts" :icon="Users" label="Contacts" />
         <AdminSidebarLink to="/admin/pipeline" :icon="KanbanSquare" label="Pipeline" />
         <AdminSidebarLink to="/admin/products" :icon="Package" label="Products" />
+        <AdminSidebarLink to="/admin/marketing" :icon="Megaphone" label="Marketing" />
+        <AdminSidebarLink v-if="isOwner" to="/admin/staff" :icon="UserCog" label="Staff" />
       </div>
 
       <p class="label-uppercase text-on-dark-soft px-4 mb-1">Coming Soon</p>
       <div class="flex flex-col gap-0.5">
         <AdminSidebarLink :icon="Boxes" label="Inventory" disabled />
         <AdminSidebarLink :icon="Receipt" label="Invoices" disabled />
-        <AdminSidebarLink :icon="Store" label="Staff & Locations" disabled />
       </div>
     </nav>
 

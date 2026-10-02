@@ -107,6 +107,8 @@ const formattedValue = computed(() =>
       <span>{{ lead.location }}</span>
     </div>
 
+    <span class="self-start bg-surface-strong px-1.5 py-0.5 text-[11px] text-body">{{ lead.source }}</span>
+
     <p v-if="nudge" class="label-uppercase text-[11px]" :class="nudgeTextClasses[nudge.tone]">{{ nudge.message }}</p>
   </div>
 </template>

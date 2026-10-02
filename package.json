@@ -11,7 +11,8 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:seed": "tsx --env-file-if-exists=.env server/db/seed.ts",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio",
+    "typecheck": "nuxt typecheck"
   },
   "dependencies": {
     "@libsql/client": "^0.18.0",
@@ -25,6 +26,8 @@
     "@tailwindcss/vite": "^4.3.3",
     "drizzle-kit": "^0.31.11",
     "tailwindcss": "^4.3.3",
-    "tsx": "^4.23.15"
+    "tsx": "^4.23.15",
+    "typescript": "^5.9.3",
+    "vue-tsc": "^3.3.12"
   }
 }

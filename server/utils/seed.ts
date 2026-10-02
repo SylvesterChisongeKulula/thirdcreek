@@ -16,6 +16,9 @@ export interface SeedCredentials {
 export async function runSeed(db: Db, creds: SeedCredentials) {
   await db.transaction(async (tx) => {
     await tx.delete(tables.leads)
+    await tx.delete(tables.marketingPartners)
+    await tx.delete(tables.marketingTasks)
+    await tx.delete(tables.marketingEngagement)
     await tx.delete(tables.purchases)
     await tx.delete(tables.contactNotes)
     await tx.delete(tables.contacts)

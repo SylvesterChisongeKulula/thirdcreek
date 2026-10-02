@@ -22,5 +22,6 @@ watch(
         <slot />
       </main>
     </div>
+    <AdminToast />
   </div>
 </template>

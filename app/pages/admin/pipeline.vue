@@ -5,7 +5,9 @@ import type { Lead, LeadStage } from '~/data/crm-leads'
 
 definePageMeta({ layout: 'admin', title: 'Pipeline' })
 
-const { leadsState, advanceLeadStage } = useCrmData()
+const { leadsState, advanceLeadStage, deleteLead } = useCrmData()
+const toast = useToast()
+const route = useRoute()
 const { ghost } = useLeadDrag()
 
 const leadsByStage = (stage: LeadStage) => leadsState.value.filter((lead) => lead.stage === stage)
@@ -14,8 +16,13 @@ const showAddLead = ref(false)
 const showConvert = ref(false)
 const convertingLead = ref<Lead | null>(null)
 
-const selectedLead = ref<Lead | null>(null)
+// Track the selected lead by id so the modal reflects the latest data after a change.
+const selectedLeadId = ref<string | null>(null)
+const selectedLead = computed(() => leadsState.value.find((lead) => lead.id === selectedLeadId.value) ?? null)
 const showDetail = ref(false)
+
+const editingLead = ref<Lead | null>(null)
+const showEditLead = ref(false)
 
 const convertInitialValues = computed(() =>
   convertingLead.value
@@ -36,10 +43,38 @@ function openConvert(id: string) {
 }
 
 function openDetail(id: string) {
-  const lead = leadsState.value.find((item) => item.id === id)
-  if (!lead) return
-  selectedLead.value = lead
+  if (!leadsState.value.some((item) => item.id === id)) return
+  selectedLeadId.value = id
   showDetail.value = true
+}
+
+// Links like /admin/pipeline?lead=lead-007 (from contacts and notifications) open that lead.
+watch(
+  [() => route.query.lead, () => leadsState.value.length],
+  ([leadId]) => {
+    if (typeof leadId === 'string' && leadId !== selectedLeadId.value) openDetail(leadId)
+  },
+  { immediate: true },
+)
+
+watch(showDetail, (open) => {
+  if (!open && route.query.lead) navigateTo({ query: { ...route.query, lead: undefined } }, { replace: true })
+})
+
+function handleEdit(lead: Lead) {
+  showDetail.value = false
+  editingLead.value = lead
+  showEditLead.value = true
+}
+
+async function handleDelete(lead: Lead) {
+  if (!confirm(`Delete the lead for ${lead.name}? This can't be undone.`)) return
+  try {
+    await deleteLead(lead.id)
+    showDetail.value = false
+  } catch (error) {
+    toast.show(apiErrorMessage(error))
+  }
 }
 
 function handleConvertFromDetail(id: string) {
@@ -84,7 +119,10 @@ const ghostValue = computed(() =>
       :lead="selectedLead"
       @convert="handleConvertFromDetail"
       @change-stage="advanceLeadStage"
+      @edit="handleEdit"
+      @delete="handleDelete"
     />
+    <AddLeadModal v-model="showEditLead" :lead="editingLead" />
 
     <Teleport to="body">
       <div

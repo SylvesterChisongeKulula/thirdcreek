@@ -19,8 +19,7 @@ function toFormData(input: ProductFormInput) {
 }
 
 export function useAdminProducts() {
-  const requestFetch = useRequestFetch()
-  const productsFetch = useFetch<Product[]>('/api/admin/products', { default: () => [], $fetch: requestFetch })
+  const productsFetch = useFetch<Product[]>('/api/admin/products', { default: () => [] })
 
   const productsState = computed(() => productsFetch.data.value ?? [])
 
